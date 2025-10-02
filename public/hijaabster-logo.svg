@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 220" role="img" aria-labelledby="title desc">
+  <title id="title">Hijaabster logo</title>
+  <desc id="desc">Wordmark reading Hijaabster with a stylized red hijab illustration.</desc>
+  <path fill="#d51f3e" d="M470 12c-42 6-84 32-92 70l1 1c18-27 46-39 66-40-31 16-40 53-19 88-34-4-52 23-40 70 9 36 34 55 63 58 33 3 59-20 70-58 14-47 10-106 4-158 16 52 26 112 14 159-10 40-7 78 12 110 25-56 28-129 14-187-15-60-8-110-60-140-11-6-23-9-35-11z"/>
+  <path fill="#f15f6f" d="M458 66c15 21 23 42 20 64 9-23 9-47 5-72 1-11-1-21-4-31-3-11-8-20-15-27 5 22 3 44-6 66z"/>
+  <path fill="#d51f3e" d="M493 188c-12-1-21-6-28-15 5 19 16 30 34 32 15 2 28-7 37-25-11 6-25 9-43 8z"/>
+  <g fill="#171717" font-size="110" font-family="'Brush Script MT', 'Lucida Handwriting', cursive">
+    <text x="10" y="160">Hijaabster</text>
+  </g>
+</svg>
