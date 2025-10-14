@@ -13,6 +13,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel"
+import { getGradientFromPalette } from "@/lib/gradient-palette"
 
 type Category = {
   id: number
@@ -115,43 +116,48 @@ export function CategorySection() {
             onTouchEnd={handleResume}
           >
             <CarouselContent>
-              {categories.map((category, index) => (
-                <CarouselItem key={category.id} className="md:basis-1/2 lg:basis-1/3">
-                  <ScrollReveal delay={index * 80} className="h-full">
-                    <Link
-                      href={category.link}
-                      className="group block h-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2"
-                      onFocusCapture={handlePause}
-                      onBlurCapture={handleResume}
-                    >
-                      <Card className="h-full overflow-hidden border border-border/50 bg-background/90 pb-8 shadow-lg drop-shadow-lg transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-xl group-hover:drop-shadow-2xl">
-                        <div className="relative aspect-[4/5] w-full overflow-hidden">
-                          <Image
-                            src={category.image || "/placeholder.svg"}
-                            alt={category.name}
-                            fill
-                            className="object-cover transition-all duration-500 group-hover:scale-105 group-hover:opacity-0"
-                            sizes="(max-width: 768px) 80vw, (max-width: 1024px) 40vw, 33vw"
-                            priority={index < 2}
-                          />
-                          <Image
-                            src={category.hoverImage || category.image || "/placeholder.svg"}
-                            alt={`${category.name} alternate view`}
-                            fill
-                            className="object-cover transition-opacity duration-500 opacity-0 group-hover:opacity-100"
-                            sizes="(max-width: 768px) 80vw, (max-width: 1024px) 40vw, 33vw"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
-                        </div>
-                        <CardContent className="flex flex-col items-center gap-3 pt-6 text-center">
-                          <h3 className="text-2xl font-semibold text-primary">{category.name}</h3>
-                          <p className="text-sm text-muted-foreground md:text-base">{category.description}</p>
-                        </CardContent>
-                      </Card>
-                    </Link>
-                  </ScrollReveal>
-                </CarouselItem>
-              ))}
+              {categories.map((category, index) => {
+                const gradient = getGradientFromPalette(index)
+                return (
+                  <CarouselItem key={category.id} className="md:basis-1/2 lg:basis-1/3">
+                    <ScrollReveal delay={index * 80} className="h-full">
+                      <Link
+                        href={category.link}
+                        className="group block h-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2"
+                        onFocusCapture={handlePause}
+                        onBlurCapture={handleResume}
+                      >
+                        <Card className="h-full overflow-hidden border border-border/50 bg-background/90 pb-8 shadow-lg drop-shadow-lg transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-xl group-hover:drop-shadow-2xl">
+                          <div className="relative aspect-[4/5] w-full overflow-hidden">
+                            <Image
+                              src={category.image || "/placeholder.svg"}
+                              alt={category.name}
+                              fill
+                              className="object-cover transition-all duration-500 group-hover:scale-105 group-hover:opacity-0"
+                              sizes="(max-width: 768px) 80vw, (max-width: 1024px) 40vw, 33vw"
+                              priority={index < 2}
+                            />
+                            <Image
+                              src={category.hoverImage || category.image || "/placeholder.svg"}
+                              alt={`${category.name} alternate view`}
+                              fill
+                              className="object-cover transition-opacity duration-500 opacity-0 group-hover:opacity-100"
+                              sizes="(max-width: 768px) 80vw, (max-width: 1024px) 40vw, 33vw"
+                            />
+                            <div
+                              className={`pointer-events-none absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t ${gradient} opacity-90 transition-opacity duration-500 group-hover:opacity-100`}
+                            />
+                          </div>
+                          <CardContent className="flex flex-col items-center gap-3 pt-6 text-center">
+                            <h3 className="text-2xl font-semibold text-primary">{category.name}</h3>
+                            <p className="text-sm text-muted-foreground md:text-base">{category.description}</p>
+                          </CardContent>
+                        </Card>
+                      </Link>
+                    </ScrollReveal>
+                  </CarouselItem>
+                )
+              })}
             </CarouselContent>
             <CarouselPrevious className="hidden -left-16 sm:flex h-12 w-12" />
             <CarouselNext className="hidden -right-16 sm:flex h-12 w-12" />

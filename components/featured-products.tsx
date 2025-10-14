@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { ScrollReveal } from "./scroll-reveal"
+import { getGradientFromPalette } from "@/lib/gradient-palette"
 
 export function FeaturedProducts() {
   const slides = [
@@ -142,7 +143,9 @@ export function FeaturedProducts() {
 
       {/* Full-bleed grid (no container) - 3 columns per row so we get 2 rows of 3 images */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-0 max-w-full">
-        {slides.map((s, idx) => (
+        {slides.map((s, idx) => {
+          const gradient = getGradientFromPalette(idx)
+          return (
           <ScrollReveal key={s.id} className="block" delay={idx * 80}>
             <div
               role="button"
@@ -169,6 +172,9 @@ export function FeaturedProducts() {
                 style={{ objectFit: "cover", objectPosition: s.pos }}
                 className="transition-opacity duration-500 ease-in-out opacity-0 group-hover:opacity-100"
               />
+              <div
+                className={`pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t ${gradient} opacity-90 transition-opacity duration-500 group-hover:opacity-100`}
+              />
               <div className="absolute bottom-6 left-6 text-white">
                 <Link
                   href={s.href}
@@ -180,7 +186,7 @@ export function FeaturedProducts() {
               </div>
             </div>
           </ScrollReveal>
-        ))}
+        )})}
       </div>
 
       {/* Lightbox modal */}
