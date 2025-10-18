@@ -1,10 +1,24 @@
+"use client"
+
 import Image from "next/image"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { Search, ShoppingCart } from "lucide-react"
 import { Input } from "./ui/input"
 import { Button } from "./ui/button"
 
+const navLinks = [
+  { href: "/", label: "Home" },
+  { href: "/shop", label: "Shop" },
+  { href: "/categories", label: "Categories" },
+  { href: "/promotions", label: "Promotions" },
+  { href: "/about", label: "About" },
+  { href: "/contact", label: "Contact" },
+]
+
 export function SiteHeader() {
+  const pathname = usePathname()
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/70 bg-muted/40 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-muted/30">
       <div className="flex h-20 w-full items-center gap-6 px-4 sm:px-6 lg:px-12">
@@ -14,21 +28,22 @@ export function SiteHeader() {
           </Link>
         </div>
         <nav className="hidden flex-1 items-center justify-center gap-5 text-sm font-medium text-muted-foreground md:flex lg:gap-6">
-          <Link href="#" className="transition-colors hover:text-primary">
-            Home
-          </Link>
-          <Link href="#" className="transition-colors hover:text-primary">
-            Shop
-          </Link>
-          <Link href="#" className="transition-colors hover:text-primary">
-            Categories
-          </Link>
-          <Link href="#" className="transition-colors hover:text-primary">
-            Promotions
-          </Link>
-          <Link href="#" className="transition-colors hover:text-primary">
-            Contact
-          </Link>
+          {navLinks.map((link) => {
+            const isActive =
+              link.href === "/"
+                ? pathname === link.href
+                : pathname === link.href || pathname.startsWith(`${link.href}/`)
+
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`transition-colors hover:text-primary ${isActive ? "text-[#BE446C]" : ""}`}
+              >
+                {link.label}
+              </Link>
+            )
+          })}
         </nav>
         <div className="flex flex-1 items-center justify-end gap-2 sm:gap-3">
           <div className="hidden items-center rounded-full border border-border/70 bg-muted/10 px-3 py-1.5 md:flex">
@@ -46,12 +61,17 @@ export function SiteHeader() {
           <Button size="sm" className="hidden sm:inline-flex">
             Shop Now
           </Button>
-          <Button variant="ghost" size="icon" className="relative">
-            <ShoppingCart className="h-5 w-5 text-foreground" />
-            <span className="sr-only">Shopping Cart</span>
-            <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
-              3
-            </span>
+          <Button asChild variant="ghost" size="icon" className="relative rounded-full">
+            <Link
+              href="/cart"
+              aria-label="View shopping cart"
+              className="flex items-center justify-center rounded-full"
+            >
+              <ShoppingCart className="h-5 w-5 text-foreground" />
+              <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
+                3
+              </span>
+            </Link>
           </Button>
         </div>
       </div>

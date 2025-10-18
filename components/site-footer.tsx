@@ -31,22 +31,22 @@ export function SiteFooter() {
           <h3 className="text-sm font-semibold uppercase tracking-wide text-foreground">Shop</h3>
           <ul className="space-y-3 text-sm text-muted-foreground">
             <li>
-              <Link href="#" className="transition-colors hover:text-primary">
+              <Link href="/shop" className="transition-colors hover:text-primary">
                 New Arrivals
               </Link>
             </li>
             <li>
-              <Link href="#" className="transition-colors hover:text-primary">
+              <Link href="/shop?sort=best-sellers" className="transition-colors hover:text-primary">
                 Best Sellers
               </Link>
             </li>
             <li>
-              <Link href="#" className="transition-colors hover:text-primary">
+              <Link href="/promotions" className="transition-colors hover:text-primary">
                 Seasonal Edits
               </Link>
             </li>
             <li>
-              <Link href="#" className="transition-colors hover:text-primary">
+              <Link href="/categories" className="transition-colors hover:text-primary">
                 Gift Cards
               </Link>
             </li>
@@ -56,22 +56,22 @@ export function SiteFooter() {
           <h3 className="text-sm font-semibold uppercase tracking-wide text-foreground">About</h3>
           <ul className="space-y-3 text-sm text-muted-foreground">
             <li>
-              <Link href="#" className="transition-colors hover:text-primary">
+              <Link href="/about" className="transition-colors hover:text-primary">
                 Our Story
               </Link>
             </li>
             <li>
-              <Link href="#" className="transition-colors hover:text-primary">
+              <Link href="/about#our-pillars" className="transition-colors hover:text-primary">
                 Craftsmanship
               </Link>
             </li>
             <li>
-              <Link href="#" className="transition-colors hover:text-primary">
+              <Link href="/contact" className="transition-colors hover:text-primary">
                 Journal
               </Link>
             </li>
             <li>
-              <Link href="#" className="transition-colors hover:text-primary">
+              <Link href="/accessibility" className="transition-colors hover:text-primary">
                 Sustainability
               </Link>
             </li>
@@ -81,23 +81,28 @@ export function SiteFooter() {
           <h3 className="text-sm font-semibold uppercase tracking-wide text-foreground">Support</h3>
           <ul className="space-y-3 text-sm text-muted-foreground">
             <li>
-              <Link href="#" className="transition-colors hover:text-primary">
-                FAQs
+              <Link href="/contact" className="transition-colors hover:text-primary">
+                Customer Care
               </Link>
             </li>
             <li>
-              <Link href="#" className="transition-colors hover:text-primary">
+              <Link href="/terms-and-conditions#orders" className="transition-colors hover:text-primary">
                 Shipping & Returns
               </Link>
             </li>
             <li>
-              <Link href="#" className="transition-colors hover:text-primary">
+              <Link href="/privacy-policy" className="transition-colors hover:text-primary">
                 Privacy Policy
               </Link>
             </li>
             <li>
-              <Link href="#" className="transition-colors hover:text-primary">
-                Contact Us
+              <Link href="/terms-and-conditions" className="transition-colors hover:text-primary">
+                Terms & Conditions
+              </Link>
+            </li>
+            <li>
+              <Link href="/accessibility" className="transition-colors hover:text-primary">
+                Accessibility
               </Link>
             </li>
           </ul>
@@ -123,13 +128,13 @@ export function SiteFooter() {
       <div className="mt-12 flex w-full flex-col gap-3 border-t border-border/70 px-4 pt-8 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-12">
         <span>&copy; {new Date().getFullYear()} Scarves Co. All rights reserved.</span>
         <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-          <Link href="#" className="transition-colors hover:text-primary">
+          <Link href="/terms-and-conditions" className="transition-colors hover:text-primary">
             Terms
           </Link>
-          <Link href="#" className="transition-colors hover:text-primary">
+          <Link href="/privacy-policy" className="transition-colors hover:text-primary">
             Privacy
           </Link>
-          <Link href="#" className="transition-colors hover:text-primary">
+          <Link href="/accessibility" className="transition-colors hover:text-primary">
             Accessibility
           </Link>
         </div>

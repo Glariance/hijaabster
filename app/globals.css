@@ -4,16 +4,16 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: #ffffff; /* Body background set to white */
+  --background: #ffffff;
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: #b8325d; /* Rich rose for primary actions */
-  --primary-foreground: #ffffff; /* Light text for primary contrast */
-  --secondary: #f7e4ec; /* Muted blush for secondary elements */
-  --secondary-foreground: #3a1120; /* Deep plum for secondary contrast */
+  --primary: #b8325d;
+  --primary-foreground: #ffffff;
+  --secondary: #f7e4ec;
+  --secondary-foreground: #3a1120;
   --muted: #f1d8e2;
   --muted-foreground: #6c3b4c;
   --accent: #d6708b;
@@ -46,9 +46,9 @@
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.145 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: #f08dae; /* Luminous rose for dark mode primary */
+  --primary: #f08dae;
   --primary-foreground: #1a0f16;
-  --secondary: #3a1d2a; /* Deep plum for secondary in dark theme */
+  --secondary: #3a1d2a;
   --secondary-foreground: #fbe3ee;
   --muted: #402330;
   --muted-foreground: #f1cddb;
@@ -124,12 +124,33 @@
   }
 }
 
-/* Highlight animation for promotional percentage (glow + bounce + color shift) */
+:root {
+  scrollbar-color: #BE446C rgba(190, 68, 108, 0.15);
+  scrollbar-width: thin;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(190, 68, 108, 0.08);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #BE446C;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a5365d;
+}
+
 .glow-bounce {
   display: inline-block;
   animation: glowBounce 1.4s ease-in-out infinite;
   will-change: transform, color, text-shadow;
-  color: #fff; /* default white to contrast dark overlay */
+  color: #fff;
   text-shadow: 0 0 0 rgba(0,0,0,0);
 }
 
@@ -141,7 +162,7 @@
   }
   50% {
     transform: scale(1.22);
-    color: #ac3259; /* brand rose at peak */
+    color: #ac3259;
     text-shadow: 0 10px 30px rgba(172,50,89,0.45);
   }
   100% {
@@ -158,11 +179,16 @@
   }
 }
 
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-12px) rotate(2deg);
+  }
+}
 
-
-
-
-/* Gentle pulse animation for interactive buttons */
 @keyframes buttonGlow {
   0%, 100% {
     box-shadow: 0 8px 20px color-mix(in srgb, var(--primary) 18%, transparent);

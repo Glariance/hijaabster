@@ -1,22 +1,19 @@
 "use client"
 
-import Image from "next/image"
 import Link from "next/link"
-import { Button } from "./ui/button"
+
 import { ScrollReveal } from "./scroll-reveal"
+import { Button } from "./ui/button"
 
 export function PromotionsSection() {
   return (
     <section className="relative w-full overflow-hidden bg-white py-16 md:py-28">
-      <div className="absolute inset-0 z-0">
-        <Image
-          src="/promotional-banner-for-scarves.jpg"
-          alt="Promotional Banner"
-          fill
-          style={{ objectFit: "cover", objectPosition: "center" }}
-          className="h-full w-full opacity-40"
-        />
-      </div>
+      <div
+        className="pointer-events-none absolute inset-0 z-0 bg-[url('/promotional-banner-for-scarves.jpg')] bg-cover bg-center bg-fixed"
+        role="presentation"
+        aria-hidden="true"
+      />
+      <div className="pointer-events-none absolute inset-0 z-0 bg-gradient-to-r from-black/35 via-black/40 to-black/35" />
 
       <div className="relative z-10 mx-auto flex h-full max-w-6xl items-center px-4">
         <ScrollReveal

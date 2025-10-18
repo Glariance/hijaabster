@@ -5,7 +5,7 @@ import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
-import { Suspense } from "react"
+import { InitialLoader } from "@/components/initial-loader"
 
 const geistSans = Inter({
   variable: "--font-geist-sans",
@@ -18,9 +18,17 @@ const geistMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "v0 App",
+  title: {
+    default: "Hijaabster",
+    template: "%s | Hijaabster",
+  },
   description: "Created with v0",
   generator: "v0.app",
+  icons: {
+    icon: "/favicon.png",
+    shortcut: "/favicon.png",
+    apple: "/favicon.png",
+  },
 }
 
 export default function RootLayout({
@@ -31,11 +39,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`font-sans ${geistSans.variable} ${geistMono.variable}`}>
-        <Suspense fallback={<div>Loading...</div>}>
-          <SiteHeader />
-          {children}
-          <SiteFooter />
-        </Suspense>
+        <InitialLoader />
+        <SiteHeader />
+        {children}
+        <SiteFooter />
         <Analytics />
       </body>
     </html>

@@ -3,79 +3,64 @@ import Link from "next/link"
 import { ScrollReveal } from "@/components/scroll-reveal"
 import { Button } from "@/components/ui/button"
 
-type PolicySection = {
+type AccessibilitySection = {
   id: string
   title: string
   description: string[]
   list?: string[]
 }
 
-const lastUpdated = "October 18, 2025"
-
-const policySections: PolicySection[] = [
+const accessibilitySections: AccessibilitySection[] = [
   {
-    id: "information-we-collect",
-    title: "Information We Collect",
+    id: "digital-standards",
+    title: "Digital Standards We Follow",
     description: [
-      "We gather personal details that you share directly with us, as well as limited data generated automatically when you explore our store. Every collection point is designed to support your experience and keep your account secure.",
+      "Our e-commerce experience is built with semantic HTML, keyboard-friendly navigation, and ARIA best practices so screen reader users can browse without barriers.",
+      "We routinely audit new releases against WCAG 2.2 AA success criteria and update components when guidelines evolve.",
     ],
     list: [
-      "Contact information: name, email, shipping details, and phone number",
-      "Account preferences: saved styles, wishlists, and fit notes",
-      "Order history and payment confirmation (processed securely by our PCI-compliant partners)",
-      "Device and usage insights such as browser type, pages viewed, and referral source",
+      "Contrast ratios meet or exceed 4.5:1 for text and interactive elements",
+      "Forms include labels, error messaging, and descriptive help text",
+      "Images use descriptive alt text and avoid decorative content where possible",
+      "Motion, autoplay, and animations can be paused when they appear on the page",
     ],
   },
   {
-    id: "how-we-use-data",
-    title: "How We Use Your Data",
+    id: "accessible-services",
+    title: "Accessible Styling Services",
     description: [
-      "Data allows us to personalize product suggestions, deliver your purchases, and maintain a safe community. We never sell personal information and limit access to trained team members only.",
+      "Fashion should feel inclusive. Our concierge programs adapt to your preferred communication style and any assistive technology you use.",
     ],
     list: [
-      "Fulfil orders, provide shipping updates, and manage returns or exchanges",
-      "Tailor product recommendations, loyalty perks, and styling guidance",
-      "Support customer care conversations by referencing prior requests",
-      "Improve the site through analytics that help us understand navigation patterns",
-      "Protect our brand and community by detecting fraud and unauthorized activity",
+      "Virtual styling sessions available with captions or live ASL interpreters",
+      "Product descriptions include fabric weight, drape, and closure details for tactile contexts",
+      "Braille product cards and large-print care guides available upon request",
+      "In-studio appointments accommodate mobility devices and sensory considerations",
     ],
   },
   {
-    id: "sharing-and-disclosure",
-    title: "Sharing and Disclosure",
+    id: "continuous-improvement",
+    title: "Continuous Improvement",
     description: [
-      "We collaborate with a select group of service providers to deliver a seamless experience. Each partner signs strict agreements to process data only on our instructions and to maintain robust safeguards.",
+      "Accessibility is an ongoing partnership. We train our team, invite community feedback, and invest in inclusive tooling to keep improving.",
     ],
     list: [
-      "Shipping and fulfilment partners to deliver your orders",
-      "Payment processors that handle secure transactions",
-      "Email and marketing tools used for opted-in communications",
-      "Analytics platforms that help us review aggregated, non-identifiable usage trends",
-    ],
-  },
-  {
-    id: "your-choices",
-    title: "Your Choices and Rights",
-    description: [
-      "You stay in control of how we use your data. Adjust preferences at any time or reach out to our privacy team for specific requests.",
-    ],
-    list: [
-      "Update or delete account information from your profile dashboard",
-      "Opt out of marketing emails via the unsubscribe link or account settings",
-      "Request a copy of your personal data or ask us to erase it entirely",
-      "Disable cookies in your browser (note this may impact site performance)",
+      "Quarterly audits by third-party accessibility specialists",
+      "Design system tokens tuned for contrast, spacing, and focus visibility",
+      "Internal education so every launch team understands inclusive best practices",
+      "Bug triage that prioritizes access-related fixes with dedicated SLAs",
     ],
   },
 ]
 
-export default function PrivacyPolicyPage() {
+export default function AccessibilityPage() {
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
       <main className="flex-1">
         <section className="relative overflow-hidden border-b border-border/40 bg-background">
           <div
             className="pointer-events-none absolute inset-0 bg-cover bg-center bg-fixed"
-            style={{ backgroundImage: "url(/woman-with-elegant-scarf-looking-thoughtfully.jpg)" }}
+            style={{ backgroundImage: "url(/diverse-group-of-women-wearing-scarves-smiling.jpg)" }}
             role="presentation"
             aria-hidden="true"
           />
@@ -83,15 +68,15 @@ export default function PrivacyPolicyPage() {
           <div className="relative z-10">
             <div className="mx-auto w-full max-w-5xl px-4 py-16 md:px-6 md:py-24 lg:py-28">
               <ScrollReveal className="mx-auto max-w-3xl space-y-6 text-center" direction="up">
-                <p className="text-sm font-semibold uppercase tracking-[0.35em] text-primary/80">Our commitment to trust</p>
-                <h1 className="text-3xl font-bold tracking-tight sm:text-5xl">Privacy Policy</h1>
+                <p className="text-sm font-semibold uppercase tracking-[0.35em] text-primary/80">Accessibility statement</p>
+                <h1 className="text-3xl font-bold tracking-tight sm:text-5xl">Inclusive by design</h1>
                 <p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  Your personal data deserves thoughtful stewardship. This policy outlines how we collect, use, and protect your
-                  information across the Hijaabster experience.
+                  Hijaabster is built for every body and every way of navigating the world. We design, test, and iterate so you
+                  can explore scarves, book styling sessions, and manage your account without friction.
                 </p>
                 <div className="flex flex-wrap justify-center gap-3">
                   <Button asChild size="lg" className="px-8 hover:bg-[#BE446C] hover:text-white">
-                    <Link href="#policy-overview">Read the policy</Link>
+                    <Link href="#accessibility-overview">Review our commitments</Link>
                   </Button>
                   <Button
                     asChild
@@ -99,42 +84,45 @@ export default function PrivacyPolicyPage() {
                     size="lg"
                     className="border-border/70 text-muted-foreground hover:border-transparent hover:bg-[#BE446C] hover:text-white"
                   >
-                    <Link href="/contact">Contact privacy team</Link>
+                    <Link href="/contact">Request accommodations</Link>
                   </Button>
                 </div>
-                <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground/80">Last updated {lastUpdated}</p>
               </ScrollReveal>
             </div>
           </div>
         </section>
 
-        <section id="policy-overview" className="py-16 md:py-24">
+        <section id="accessibility-overview" className="py-16 md:py-24">
           <div className="mx-auto w-full max-w-6xl px-4 md:px-6">
             <div className="grid gap-10 lg:grid-cols-[1fr_0.65fr]">
               <ScrollReveal direction="up" className="space-y-6">
                 <h2 className="text-3xl font-bold tracking-tight text-primary sm:text-4xl">
-                  A transparent approach to safeguarding your data
+                  Designing a shopping experience without barriers
                 </h2>
                 <p className="text-muted-foreground md:text-lg">
-                  We rely on privacy-by-design principles, meaning data protection is considered at every layer of the product.
-                  You can explore the sections below for specifics on collection, usage, sharing, and your rights.
+                  Accessibility is part of our design system, not an afterthought. The sections below highlight the pillars that
+                  shape every release, from coded components to concierge support.
                 </p>
                 <div className="rounded-3xl border border-border/60 bg-card/80 p-6 shadow-sm">
-                  <h3 className="text-base font-semibold uppercase tracking-[0.3em] text-primary/70">Need a copy?</h3>
+                  <h3 className="text-base font-semibold uppercase tracking-[0.3em] text-primary/70">Need this statement in another format?</h3>
                   <p className="mt-3 text-sm text-muted-foreground md:text-base/relaxed">
                     Email{" "}
-                    <a className="text-primary underline underline-offset-4" href="mailto:privacy@hijaabster.co">
-                      privacy@hijaabster.co
+                    <a className="text-primary underline underline-offset-4" href="mailto:access@hijaabster.co">
+                      access@hijaabster.co
                     </a>{" "}
-                    to request a PDF or to exercise any of your data rights. We respond within two business days.
+                    for large-print, Braille, or translated copies. We fulfill requests within five business days.
                   </p>
                 </div>
               </ScrollReveal>
 
-              <ScrollReveal direction="up" delay={120} className="rounded-3xl border border-border/60 bg-card/70 p-6 shadow-sm">
+              <ScrollReveal
+                direction="up"
+                delay={120}
+                className="rounded-3xl border border-border/60 bg-card/70 p-6 shadow-sm"
+              >
                 <h3 className="text-base font-semibold uppercase tracking-[0.3em] text-primary/70">Quick navigation</h3>
                 <nav className="mt-5 space-y-3 text-sm text-muted-foreground">
-                  {policySections.map((section) => (
+                  {accessibilitySections.map((section) => (
                     <div key={section.id}>
                       <Link href={`#${section.id}`} className="transition-colors hover:text-primary">
                         {section.title}
@@ -146,7 +134,7 @@ export default function PrivacyPolicyPage() {
             </div>
 
             <div className="mt-16 space-y-10">
-              {policySections.map((section, index) => (
+              {accessibilitySections.map((section, index) => (
                 <ScrollReveal
                   key={section.id}
                   id={section.id}
@@ -179,22 +167,29 @@ export default function PrivacyPolicyPage() {
         <section className="border-t border-border/40 bg-muted/10 py-16 md:py-24">
           <div className="mx-auto w-full max-w-5xl px-4 md:px-6">
             <ScrollReveal className="mx-auto max-w-3xl space-y-4 text-center" direction="up">
-              <h2 className="text-3xl font-bold tracking-tight text-primary sm:text-4xl">Questions about privacy?</h2>
+              <h2 className="text-3xl font-bold tracking-tight text-primary sm:text-4xl">Share your feedback</h2>
               <p className="text-muted-foreground md:text-lg">
-                We take every inquiry seriously. Let us know how we can support your data preferences, from opt-outs to detailed
-                reports.
+                If you encounter an access barrier, we want to hear about it. Your insight helps us prioritize updates that make
+                the experience better for everyone.
               </p>
             </ScrollReveal>
             <div className="mt-8 flex flex-wrap justify-center gap-4">
               <Button asChild className="px-8 hover:bg-[#BE446C] hover:text-white">
-                <Link href="/contact">Message our privacy team</Link>
+                <Link href="/contact">Submit a feedback form</Link>
               </Button>
               <Button
                 asChild
                 variant="outline"
                 className="px-8 border-border/70 text-muted-foreground hover:border-transparent hover:bg-[#BE446C] hover:text-white"
               >
-                <Link href="mailto:privacy@hijaabster.co">Email privacy@hijaabster.co</Link>
+                <Link href="tel:+12125551045">Call +1 (212) 555-1045</Link>
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                className="px-8 border-border/70 text-muted-foreground hover:border-transparent hover:bg-[#BE446C] hover:text-white"
+              >
+                <Link href="mailto:access@hijaabster.co">Email access@hijaabster.co</Link>
               </Button>
             </div>
           </div>

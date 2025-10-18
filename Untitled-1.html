@@ -1,0 +1,111 @@
+<!-- Promotion section back. -->
+<section className="relative overflow-hidden border-y border-border/40 bg-background pt-10 pb-3 md:pt-14 md:pb-4">
+  {/* Background */}
+  <div
+    className="pointer-events-none absolute inset-0 bg-[url('/silk-scarves-category.jpg')] bg-cover bg-center bg-fixed"
+    role="presentation"
+    aria-hidden="true"
+  />
+  <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-background/80 via-background/60 to-background/70" />
+
+  <div className="relative z-10 mx-auto w-full max-w-7xl px-4 md:px-6">
+    {/* Header */}
+    <ScrollReveal className="text-center mb-8 max-w-3xl mx-auto" direction="up">
+      <p className="text-sm font-semibold uppercase tracking-[0.35em] text-primary/80">
+        On the Horizon
+      </p>
+      <h2 className="text-4xl font-bold mt-3 mb-4 sm:text-5xl">
+        Upcoming Drops & Experiences
+      </h2>
+      <p className="text-muted-foreground text-base md:text-lg mb-6">
+        Secure insider access to the collaborations and styling services arriving next. 
+        Loyalty members receive first invitations.
+      </p>
+      <Button
+        asChild
+        size="lg"
+        className="px-8 hover:bg-[#BE446C] hover:text-white"
+      >
+        <Link href="/account/profile">Reserve your spot</Link>
+      </Button>
+    </ScrollReveal>
+
+    {/* Layout */}
+    <div className="relative grid gap-8 lg:grid-cols-3 items-end">
+      {/* Left Column */}
+      <div className="flex flex-col items-center gap-5 order-2 lg:order-1">
+        {/* Box 1 */}
+        <ScrollReveal
+          direction="up"
+          delay={100}
+          className="w-full max-w-[360px] rounded-3xl border border-border/60 bg-card/80 p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+        >
+          <p className="text-xs font-semibold uppercase tracking-[0.35em] text-primary/70">
+            {upcomingDrops[0].launchDate}
+          </p>
+          <h3 className="mt-3 text-xl font-semibold text-primary">{upcomingDrops[0].title}</h3>
+          <p className="mt-2 text-sm text-muted-foreground md:text-base/relaxed">
+            {upcomingDrops[0].description}
+          </p>
+        </ScrollReveal>
+
+        {/* Left Woman (Feet Perfectly on Bottom) */}
+        <ScrollReveal direction="left" delay={200} className="flex justify-center items-end">
+          <Image
+            src="/scarfWomenStanding1.png"
+            alt="Woman wearing a scarf from the upcoming collection"
+            width={780}
+            height={1150}
+            className="max-h-[1100px] w-auto object-contain object-bottom translate-y-[50px]"
+          />
+        </ScrollReveal>
+      </div>
+
+      {/* Center Box (Higher in Middle) */}
+      <div className="flex flex-col items-center justify-end order-1 lg:order-2 -mt-36 lg:-mt-72">
+        <ScrollReveal
+          direction="up"
+          delay={200}
+          className="relative z-10 w-full max-w-[400px] rounded-3xl border border-border/60 bg-card/80 p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+        >
+          <p className="text-xs font-semibold uppercase tracking-[0.35em] text-primary/70">
+            {upcomingDrops[2].launchDate}
+          </p>
+          <h3 className="mt-3 text-xl font-semibold text-primary">{upcomingDrops[2].title}</h3>
+          <p className="mt-2 text-sm text-muted-foreground md:text-base/relaxed">
+            {upcomingDrops[2].description}
+          </p>
+        </ScrollReveal>
+      </div>
+
+      {/* Right Column */}
+      <div className="flex flex-col items-center gap-5 order-3 lg:order-3">
+        {/* Box 2 */}
+        <ScrollReveal
+          direction="up"
+          delay={150}
+          className="w-full max-w-[360px] rounded-3xl border border-border/60 bg-card/80 p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+        >
+          <p className="text-xs font-semibold uppercase tracking-[0.35em] text-primary/70">
+            {upcomingDrops[1].launchDate}
+          </p>
+          <h3 className="mt-3 text-xl font-semibold text-primary">{upcomingDrops[1].title}</h3>
+          <p className="mt-2 text-sm text-muted-foreground md:text-base/relaxed">
+            {upcomingDrops[1].description}
+          </p>
+        </ScrollReveal>
+
+        {/* Right Woman (Feet Perfectly on Bottom) */}
+        <ScrollReveal direction="right" delay={250} className="flex justify-center items-end">
+          <Image
+            src="/scarfWomenStanding2.png"
+            alt="Woman showcasing upcoming collection"
+            width={780}
+            height={1150}
+            className="max-h-[1100px] w-auto object-contain object-bottom translate-y-[50px]"
+          />
+        </ScrollReveal>
+      </div>
+    </div>
+  </div>
+</section>

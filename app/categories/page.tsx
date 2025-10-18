@@ -162,20 +162,18 @@ export default function CategoriesPage() {
     <div className="flex min-h-screen flex-col bg-background text-foreground">
       <main className="flex-1">
         <section className="relative isolate overflow-hidden bg-slate-950">
-          <Image
-            src={heroBackground}
-            alt="Customers styled in scarves from our collection"
-            fill
-            priority
-            sizes="100vw"
-            className="absolute inset-0 -z-10 object-cover opacity-60"
+          <div
+            className="pointer-events-none absolute inset-0 -z-10 bg-cover bg-center bg-fixed"
+            style={{ backgroundImage: `url(${heroBackground})` }}
+            role="presentation"
+            aria-hidden="true"
           />
-          <div className="absolute inset-0 -z-10 bg-gradient-to-r from-black/80 via-black/60 to-black/40" />
+          <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-r from-background/85 via-background/65 to-background/75" />
           <div className="mx-auto flex max-w-7xl flex-col items-center justify-center px-4 py-24 text-center md:px-6 md:py-32 lg:py-40">
-            <ScrollReveal className="space-y-4 text-white" direction="up">
+            <ScrollReveal className="space-y-4 text-foreground" direction="up">
               <p className="text-sm font-semibold uppercase tracking-[0.35em] text-primary/80">Shop by Category</p>
-              <h1 className="text-3xl font-bold tracking-tighter text-white sm:text-5xl">Curate Your Signature Edit</h1>
-              <p className="mx-auto max-w-2xl text-base text-white/80 md:text-xl/relaxed">
+              <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl">Curate Your Signature Edit</h1>
+              <p className="mx-auto max-w-2xl text-base text-muted-foreground md:text-xl/relaxed">
                 Discover silhouettes crafted for every mood—luxurious silks, breathable cottons, cold-weather layers, and
                 limited-run artisan prints.
               </p>
@@ -187,7 +185,7 @@ export default function CategoriesPage() {
                   asChild
                   variant="outline"
                   size="lg"
-                  className="border-white/60 bg-transparent text-white hover:bg-transparent hover:text-white"
+                  className="border-border/70 text-muted-foreground hover:bg-primary/10 hover:text-primary"
                 >
                   <Link href="#categories">Browse Categories</Link>
                 </Button>

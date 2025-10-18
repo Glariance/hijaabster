@@ -100,22 +100,20 @@ export default function ShopPage() {
     <div className="flex min-h-screen flex-col bg-background text-foreground">
       <main className="flex-1">
         <section className="relative isolate overflow-hidden bg-slate-950">
-          <Image
-            src="/woman-wearing-scarf-banner.jpg"
-            alt="Shop our curated collection"
-            fill
-            priority
-            sizes="100vw"
-            className="absolute inset-0 -z-10 object-cover opacity-60"
+          <div
+            className="pointer-events-none absolute inset-0 -z-10 bg-cover bg-center bg-fixed"
+            style={{ backgroundImage: "url(/woman-wearing-scarf-banner.jpg)" }}
+            role="presentation"
+            aria-hidden="true"
           />
-          <div className="absolute inset-0 -z-10 bg-gradient-to-r from-black/80 via-black/60 to-black/40" />
+          <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-r from-background/85 via-background/65 to-background/75" />
           <div className="mx-auto flex max-w-7xl flex-col items-center justify-center px-4 py-24 text-center md:px-6 md:py-32 lg:py-40">
-            <ScrollReveal className="space-y-4 text-white" direction="up">
+            <ScrollReveal className="space-y-4 text-foreground" direction="up">
               <p className="text-sm font-semibold uppercase tracking-[0.35em] text-primary/80">
                 Shop the Edit
               </p>
-              <h1 className="text-3xl font-bold tracking-tighter text-white sm:text-5xl">Shop</h1>
-              <p className="mx-auto max-w-2xl text-base text-white/80 md:text-xl/relaxed">
+              <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl">Shop</h1>
+              <p className="mx-auto max-w-2xl text-base text-muted-foreground md:text-xl/relaxed">
                 Discover refined silhouettes, artisanal finishes, and everyday staples curated for the modern wardrobe.
               </p>
             </ScrollReveal>
