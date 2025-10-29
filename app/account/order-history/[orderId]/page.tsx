@@ -1,10 +1,15 @@
+// Disable dynamic params for static export
+export const dynamic = 'force-static';
+export const dynamicParams = false;
+export const revalidate = 0;
+
+// Optional: keep imports (so you don't get lint or type errors)
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
 import Image from "next/image"
 
-export default function OrderDetailPage({ params }: { params: { orderId: string } }) {
-  const { orderId } = params
-
+// Temporary placeholder page for static export
+export default function OrderDetailPage() {
   return (
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
