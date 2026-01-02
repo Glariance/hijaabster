@@ -1,5 +1,9 @@
+"use client"
+
 import { MessageSquare, Phone, MapPin, Clock, Instagram, Send } from "lucide-react"
 import Link from "next/link"
+import { useState, FormEvent } from "react"
+import Swal from "sweetalert2"
 
 import { ScrollReveal } from "@/components/scroll-reveal"
 import { Button } from "@/components/ui/button"
@@ -71,6 +75,200 @@ const faqs = [
 ]
 
 export default function ContactPage() {
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    topic: "",
+    message: "",
+  })
+
+  const validateForm = () => {
+    if (!formData.name.trim()) {
+      Swal.fire({
+        icon: "error",
+        iconColor: "#BE446C",
+        title: "Validation Error",
+        text: "Please enter your full name",
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        background: "#1a1a1a",
+        color: "#ffffff",
+        didOpen: (toast) => {
+          const progressBar = toast.querySelector(".swal2-timer-progress-bar") as HTMLElement
+          if (progressBar) {
+            progressBar.style.backgroundColor = "#BE446C"
+          }
+        },
+      })
+      return false
+    }
+
+    if (!formData.email.trim()) {
+      Swal.fire({
+        icon: "error",
+        iconColor: "#BE446C",
+        title: "Validation Error",
+        text: "Please enter your email address",
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        background: "#1a1a1a",
+        color: "#ffffff",
+        didOpen: (toast) => {
+          const progressBar = toast.querySelector(".swal2-timer-progress-bar") as HTMLElement
+          if (progressBar) {
+            progressBar.style.backgroundColor = "#BE446C"
+          }
+        },
+      })
+      return false
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(formData.email)) {
+      Swal.fire({
+        icon: "error",
+        iconColor: "#BE446C",
+        title: "Validation Error",
+        text: "Please enter a valid email address",
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        background: "#1a1a1a",
+        color: "#ffffff",
+        didOpen: (toast) => {
+          const progressBar = toast.querySelector(".swal2-timer-progress-bar") as HTMLElement
+          if (progressBar) {
+            progressBar.style.backgroundColor = "#BE446C"
+          }
+        },
+      })
+      return false
+    }
+
+    if (!formData.message.trim()) {
+      Swal.fire({
+        icon: "error",
+        iconColor: "#BE446C",
+        title: "Validation Error",
+        text: "Please enter your message",
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        background: "#1a1a1a",
+        color: "#ffffff",
+        didOpen: (toast) => {
+          const progressBar = toast.querySelector(".swal2-timer-progress-bar") as HTMLElement
+          if (progressBar) {
+            progressBar.style.backgroundColor = "#BE446C"
+          }
+        },
+      })
+      return false
+    }
+
+    return true
+  }
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
+    if (!validateForm()) {
+      return
+    }
+
+    setIsSubmitting(true)
+
+    try {
+      // Get API URL from environment or use default
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"
+
+      const response = await fetch(`${apiUrl}/contact`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone || null,
+          topic: formData.topic || null,
+          message: formData.message,
+          subject: formData.topic || "Website Inquiry",
+        }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok && data.success) {
+        Swal.fire({
+          icon: "success",
+          iconColor: "#10b981",
+          title: "Message Sent!",
+          text: data.message || "Thank you for reaching out. Our team will get back to you shortly.",
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 5000,
+          timerProgressBar: true,
+          background: "#1a1a1a",
+          color: "#ffffff",
+          didOpen: (toast) => {
+            const progressBar = toast.querySelector(".swal2-timer-progress-bar") as HTMLElement
+            if (progressBar) {
+              progressBar.style.backgroundColor = "#BE446C"
+            }
+          },
+        })
+
+        // Reset form
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          topic: "",
+          message: "",
+        })
+      } else {
+        throw new Error(data.message || "Failed to send message")
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        iconColor: "#BE446C",
+        title: "Error",
+        text: error instanceof Error ? error.message : "Something went wrong. Please try again later.",
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 5000,
+        timerProgressBar: true,
+        background: "#1a1a1a",
+        color: "#ffffff",
+        didOpen: (toast) => {
+          const progressBar = toast.querySelector(".swal2-timer-progress-bar") as HTMLElement
+          if (progressBar) {
+            progressBar.style.backgroundColor = "#BE446C"
+          }
+        },
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
 
@@ -162,7 +360,7 @@ export default function ContactPage() {
           <div className="mx-auto w-full max-w-6xl px-4 md:px-6">
             <div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
               <ScrollReveal direction="up" className="rounded-3xl border border-border/60 bg-card/80 p-8 shadow-lg">
-                <form id="contact-form" className="space-y-6">
+                <form id="contact-form" onSubmit={handleSubmit} className="space-y-6">
                   <div className="space-y-2 text-center">
                     <p className="text-sm font-semibold uppercase tracking-[0.3em] text-primary/70">
                       Tell us how we can help
@@ -175,30 +373,67 @@ export default function ContactPage() {
                   </div>
                   <div className="grid gap-6 md:grid-cols-2">
                     <div className="space-y-2">
-                      <Label htmlFor="name">Full name</Label>
-                      <Input id="name" name="name" placeholder="Amina Farouq" required />
+                      <Label htmlFor="name">Full name *</Label>
+                      <Input
+                        id="name"
+                        name="name"
+                        placeholder="Full Name"
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        className="placeholder:opacity-40 text-[rgb(184,50,93)]"
+                        style={{ color: 'rgb(184, 50, 93)' }}
+                      />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
-                      <Input id="email" name="email" type="email" placeholder="you@email.com" required />
+                      <Label htmlFor="email">Email *</Label>
+                      <Input
+                        id="email"
+                        name="email"
+                        type="email"
+                        placeholder="you@email.com"
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        className="placeholder:opacity-40 text-[rgb(184,50,93)]"
+                        style={{ color: 'rgb(184, 50, 93)' }}
+                      />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="phone">Phone</Label>
-                      <Input id="phone" name="phone" type="tel" placeholder="+1 (555) 123-4567" />
+                      <Input
+                        id="phone"
+                        name="phone"
+                        type="tel"
+                        placeholder="+1 (555) 123-4567"
+                        value={formData.phone}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                        className="placeholder:opacity-40 text-[rgb(184,50,93)]"
+                        style={{ color: 'rgb(184, 50, 93)' }}
+                      />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="topic">Topic</Label>
-                      <Input id="topic" name="topic" placeholder="Styling consult, order status, gifting inspiration" />
+                      <Input
+                        id="topic"
+                        name="topic"
+                        placeholder="Styling consult, order status, gifting inspiration"
+                        value={formData.topic}
+                        onChange={(e) => setFormData({ ...formData, topic: e.target.value })}
+                        className="placeholder:opacity-40 text-[rgb(184,50,93)]"
+                        style={{ color: 'rgb(184, 50, 93)' }}
+                      />
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="message">Message</Label>
+                    <Label htmlFor="message">Message *</Label>
                     <Textarea
                       id="message"
                       name="message"
                       rows={5}
                       placeholder="Share details about your request, timelines, or the pieces you have your eye on."
-                      required
+                      value={formData.message}
+                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                      className="placeholder:opacity-40 text-[rgb(184,50,93)]"
+                      style={{ color: 'rgb(184, 50, 93)' }}
                     />
                   </div>
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -209,8 +444,12 @@ export default function ContactPage() {
                       </Link>
                       .
                     </p>
-                    <Button type="submit" className="px-8 hover:bg-[#BE446C] hover:text-white">
-                      Send message
+                    <Button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="px-8 hover:bg-[#BE446C] hover:text-white disabled:opacity-50"
+                    >
+                      {isSubmitting ? "Sending..." : "Send message"}
                     </Button>
                   </div>
                 </form>

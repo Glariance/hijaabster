@@ -9,10 +9,10 @@ import { Button } from "./ui/button"
 
 const navLinks = [
   { href: "/", label: "Home" },
-  { href: "/shop", label: "Shop" },
-  { href: "/categories", label: "Categories" },
-  { href: "/promotions", label: "Promotions" },
   { href: "/about", label: "About" },
+  { href: "/promotions", label: "Promotions" },
+  { href: "/categories", label: "Category" },
+  { href: "/shop", label: "Shop" },
   { href: "/contact", label: "Contact" },
 ]
 
