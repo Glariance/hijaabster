@@ -20,9 +20,11 @@ import { getGradientFromPalette } from "@/lib/gradient-palette"
 
 type CheckedState = boolean | "indeterminate"
 
-const currency = new Intl.NumberFormat("en-US", {
+const currency = new Intl.NumberFormat("en-PK", {
   style: "currency",
-  currency: "USD",
+  currency: "PKR",
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0,
 })
 
 const PRODUCTS_PER_PAGE = 6
@@ -323,7 +325,7 @@ export default function ShopPage() {
                                   <span className="text-2xl font-semibold text-primary">
                                     {currency.format(product.price)}
                                   </span>
-                                  <span className="text-sm uppercase tracking-[0.3em] text-muted-foreground">USD</span>
+                                  <span className="text-sm uppercase tracking-[0.3em] text-muted-foreground">PKR</span>
                                 </div>
                                 <Button
                                   type="button"

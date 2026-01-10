@@ -191,28 +191,18 @@ export default function ContactPage() {
     setIsSubmitting(true)
 
     try {
-      // Get API URL from environment or use default
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"
+      const { apiService } = await import("@/lib/api-client")
 
-      const response = await fetch(`${apiUrl}/contact`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone || null,
-          topic: formData.topic || null,
-          message: formData.message,
-          subject: formData.topic || "Website Inquiry",
-        }),
+      const data = await apiService.submitContact({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone || undefined,
+        topic: formData.topic || null,
+        subject: formData.topic || "Website Inquiry",
+        message: formData.message,
       })
 
-      const data = await response.json()
-
-      if (response.ok && data.success) {
+      if (data.success) {
         Swal.fire({
           icon: "success",
           iconColor: "#10b981",
@@ -244,12 +234,17 @@ export default function ContactPage() {
       } else {
         throw new Error(data.message || "Failed to send message")
       }
-    } catch (error) {
+    } catch (error: any) {
+      // Handle axios errors
+      const errorMessage = error?.response?.data?.message 
+        || error?.message 
+        || "Something went wrong. Please try again later."
+      
       Swal.fire({
         icon: "error",
         iconColor: "#BE446C",
         title: "Error",
-        text: error instanceof Error ? error.message : "Something went wrong. Please try again later.",
+        text: errorMessage,
         toast: true,
         position: "top-end",
         showConfirmButton: false,

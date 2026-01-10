@@ -1,65 +1,50 @@
 "use client"
 
 import Link from "next/link"
-import Image from "next/image"
 import { Button } from "./ui/button"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
+import type { BannerItemData } from "@/lib/types/cms"
 
-export function HeroSlider() {
-  const slides = [
-    {
-      id: 1,
-      image: "/woman-wearing-scarf-banner.jpg",
-      position: "center 30%",
-      title: "New Collection: Silk Dreams",
-      description: "Discover our luxurious silk scarves, perfect for any occasion.",
-      link: "#",
-    },
-    {
-      id: 2,
-      image: "/diverse-group-of-women-wearing-scarves-smiling.jpg",
-      position: "center",
-      title: "Pastel Perfection",
-      description: "Embrace soft hues and elegant designs with our pastel scarf range.",
-      link: "#",
-    },
-    {
-      id: 3,
-      image: "/woman-with-elegant-scarf-looking-thoughtfully.jpg",
-      position: "center 40%",
-      title: "Winter Warmth",
-      description: "Stay cozy and stylish with our new collection of warm scarves.",
-      link: "#",
-    },
-    {
-      id: 4,
-      image: "/muslim-woman-wearing-a-silk-scarf-full-face-visible-not-cut-off-covering-head-elegant-modest.jpg",
-      position: "center 20%",
-      title: "Discover Your Perfect Scarf",
-      description: "Explore our exquisite collection and find your unique style.",
-      link: "#",
-    },
-    {
-      id: 5,
-      image: "/muslim-woman-wearing-a-pastel-scarf-full-face-visible-not-cut-off-covering-head-serene-modern.jpg",
-      position: "center 20%",
-      title: "Elegant Styles for Every Season",
-      description: "Explore our diverse range of scarves, perfect for any look.",
-      link: "#",
-    },
-    {
-      id: 6,
-      image: "/muslim-woman-wearing-a-handcrafted-scarf-full-face-visible-not-cut-off-covering-head-unique-artisan.jpg",
-      position: "center 30%",
-      title: "Handcrafted with Love",
-      description: "Experience the unique touch of our artisan-made scarf collection.",
-      link: "#",
-    },
-  ]
+interface HeroSliderProps {
+  bannerItems?: BannerItemData[]
+}
 
+export function HeroSlider({ bannerItems = [] }: HeroSliderProps) {
   const [currentSlide, setCurrentSlide] = useState(0)
 
+  // Transform CMS data into slider format
+  const slides = useMemo(() => {
+    if (!bannerItems || bannerItems.length === 0) {
+      // Return empty array to show loading state
+      return []
+    }
+
+    return bannerItems.map((item, index) => {
+      // Strip HTML tags from description if it's HTML
+      const description = item["Description"]?.value || ""
+      const plainDescription = description.replace(/<[^>]*>/g, "").trim()
+
+      // Get image URL - prefer full URL, fallback to value
+      const imageUrl = item["Banner Image"]?.url || item["Banner Image"]?.value || "/placeholder.svg"
+      
+      // Get button link - prefer Button Link field, fallback to shop page
+      const buttonLink = item["Button Link"]?.value || "/shop"
+      
+      return {
+        id: index + 1,
+        image: imageUrl,
+        position: "center 30%", // Default position, can be made dynamic if needed
+        title: item["Title"]?.value || "",
+        description: plainDescription,
+        link: buttonLink,
+        buttonText: item["Button Text"]?.value || "Shop Now",
+      }
+    })
+  }, [bannerItems])
+
   useEffect(() => {
+    if (slides.length === 0) return
+    
     const timer = setInterval(() => {
       setCurrentSlide((prevSlide) => (prevSlide + 1) % slides.length)
     }, 5000)
@@ -68,6 +53,21 @@ export function HeroSlider() {
 
   const goToSlide = (slideIndex: number) => {
     setCurrentSlide(slideIndex)
+  }
+
+  // Show loading state if no banner items
+  if (!bannerItems || bannerItems.length === 0) {
+    return (
+      <section
+        className="relative w-full overflow-hidden bg-white flex items-center justify-center"
+        style={{ height: 'clamp(520px, 80vh, 1000px)' }}
+      >
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-lg text-muted-foreground">Loading...</p>
+        </div>
+      </section>
+    )
   }
 
   return (
@@ -82,35 +82,52 @@ export function HeroSlider() {
             index === currentSlide ? "opacity-100" : "opacity-0"
           }`}
         >
-          <Image
+          {/* Banner image */}
+          <img
             src={slide.image || "/placeholder.svg"}
-            alt={slide.title}
-            fill
-            style={{ objectFit: "cover", objectPosition: slide.position || "center" }}
-            className="z-0 kenburns"
-            priority={index === 0}
+            alt={slide.title || "Banner image"}
+            style={{
+              objectFit: "cover",
+              objectPosition: slide.position || "center",
+              width: "100%",
+              height: "100%",
+            }}
+            className="z-0 kenburns absolute inset-0"
+            loading={index === 0 ? "eager" : "lazy"}
           />
+
+          {/* Content overlay */}
           <div className="absolute inset-0 bg-black/28 z-10 flex items-center justify-start pl-4 md:pl-8">
             <div className="text-left text-white p-4 max-w-md lg:max-w-lg">
-              <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-3 text-balance">{slide.title}</h2>
-              <p className="text-base md:text-lg lg:text-xl mb-4 text-pretty">{slide.description}</p>
-              <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                <Link href={slide.link}>Shop Now</Link>
-              </Button>
+              {slide.title && (
+                <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-3 text-balance">{slide.title}</h2>
+              )}
+              {slide.description && (
+                <p className="text-base md:text-lg lg:text-xl mb-4 text-pretty">{slide.description}</p>
+              )}
+              {(slide.buttonText || slide.link !== "#") && (
+                <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                  <Link href={slide.link || "#"}>{slide.buttonText || "Shop Now"}</Link>
+                </Button>
+              )}
             </div>
           </div>
         </div>
       ))}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex space-x-2">
-        {slides.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => goToSlide(index)}
-            className={`h-2 w-2 rounded-full transition-all ${index === currentSlide ? "bg-white w-6" : "bg-white/50"}`}
-            aria-label={`Go to slide ${index + 1}`}
-          />
-        ))}
-      </div>
+      
+      {/* Navigation dots */}
+      {slides.length > 1 && (
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex space-x-2">
+          {slides.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => goToSlide(index)}
+              className={`h-2 w-2 rounded-full transition-all ${index === currentSlide ? "bg-white w-6" : "bg-white/50"}`}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
+        </div>
+      )}
     </section>
   )
 }

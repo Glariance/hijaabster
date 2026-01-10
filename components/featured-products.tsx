@@ -5,8 +5,13 @@ import Image from "next/image"
 import Link from "next/link"
 import { ScrollReveal } from "./scroll-reveal"
 import { getGradientFromPalette } from "@/lib/gradient-palette"
+import type { CmsSection } from "@/lib/types/cms"
 
-export function FeaturedProducts() {
+interface FeaturedProductsProps {
+  sectionData?: CmsSection | null
+}
+
+export function FeaturedProducts({ sectionData }: FeaturedProductsProps) {
   const slides = [
     {
       id: "abayas",
@@ -128,17 +133,42 @@ export function FeaturedProducts() {
     animateToIndex((currentIndex - 1 + slides.length) % slides.length)
   }
 
+  // Extract title and description from CMS data
+  const defaultTitle = "Featured Products"
+  const defaultDescription = "Explore our curated selection of best-selling scarves and seasonal picks. Each piece is hand-selected for quality, comfort, and timeless style—perfect for everyday wear and special occasions."
+
+  const title = sectionData?.fields?.["Title"]?.value || defaultTitle
+  const descriptionHtml = sectionData?.fields?.["Description"]?.value || defaultDescription
+  const description = descriptionHtml.replace(/<[^>]*>/g, "").trim()
+
+  // Show loading state if no section data
+  if (!sectionData) {
+    return (
+      <section className="w-full mt-6 md:mt-8 lg:mt-10">
+        <div className="w-full px-4 py-4 md:py-6 bg-background flex flex-col items-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading...</p>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
   return (
     <section className="w-full mt-6 md:mt-8 lg:mt-10">
       {/* Heading centered in a container (match Shop by Category spacing) */}
       <ScrollReveal className="w-full px-4 py-4 md:py-6 bg-background flex flex-col items-center" direction="up">
-        <h2 className="mb-2 text-center text-3xl font-bold tracking-tighter text-primary md:text-4xl text-balance">
-          Featured Products
-        </h2>
-                <p className="mx-auto mb-4 max-w-2xl text-center text-muted-foreground md:text-xl/relaxed">
-          Explore our curated selection of best-selling scarves and seasonal picks. Each piece is hand-selected for
-          quality, comfort, and timeless style{"\u2014"}perfect for everyday wear and special occasions.
-        </p>
+        {title && (
+          <h2 className="mb-2 text-center text-3xl font-bold tracking-tighter text-primary md:text-4xl text-balance">
+            {title}
+          </h2>
+        )}
+        {description && (
+          <p className="mx-auto mb-4 max-w-2xl text-center text-muted-foreground md:text-xl/relaxed">
+            {description}
+          </p>
+        )}
       </ScrollReveal>
 
       {/* Full-bleed grid (no container) - 3 columns per row so we get 2 rows of 3 images */}

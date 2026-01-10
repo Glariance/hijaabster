@@ -196,7 +196,7 @@ export default function PromotionsPage() {
           </div>
         </section>
 
-        <section className="border-y border-border/40 bg-muted/20 py-16 md:py-24">
+        {/* <section className="border-y border-border/40 bg-muted/20 py-16 md:py-24">
           <div className="mx-auto w-full max-w-6xl px-4 md:px-6">
             <ScrollReveal
               className="mx-auto max-w-2xl space-y-4 text-center"
@@ -244,7 +244,7 @@ export default function PromotionsPage() {
               ))}
             </div>
           </div>
-        </section>
+        </section> */}
 
         <section className="relative overflow-hidden py-16 md:py-24">
           <div className="absolute inset-0">
