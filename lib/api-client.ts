@@ -93,6 +93,75 @@ export const apiService = {
     const response = await apiClient.post('/contact', payload)
     return response.data
   },
+
+  // Get featured products
+  getFeaturedProducts: async (limit: number = 6) => {
+    const response = await apiClient.get('/products/featured', {
+      params: { limit },
+    })
+    return response.data
+  },
+
+  // Get all categories
+  getCategories: async () => {
+    const response = await apiClient.get('/categories')
+    return response.data
+  },
+
+  // Get all products with optional filters
+  getProducts: async (params?: {
+    category?: string
+    search?: string
+    featured?: boolean
+    new?: boolean
+    top?: boolean
+    has_coupon?: boolean
+  }) => {
+    const response = await apiClient.get('/products', { params })
+    return response.data
+  },
+
+  // Promotions page data
+  getPromotionsPage: async (slug: string = 'promotions') => {
+    const response = await apiClient.get('/promotions', {
+      params: { slug },
+      // Disable caching for dynamic CMS content
+      headers: {
+        'Cache-Control': 'no-cache',
+      },
+    })
+    return response.data
+  },
+
+  // Category page data
+  getCategoryPage: async (slug: string = 'category') => {
+    const response = await apiClient.get('/category', {
+      params: { slug },
+      // Disable caching for dynamic CMS content
+      headers: {
+        'Cache-Control': 'no-cache',
+      },
+    })
+    return response.data
+  },
+
+  // Shop page data
+  getShopPage: async (slug: string = 'shop') => {
+    const response = await apiClient.get('/shop', {
+      params: { slug },
+      // Disable caching for dynamic CMS content
+      headers: {
+        'Cache-Control': 'no-cache',
+      },
+    })
+    return response.data
+  },
+
+  // Get active bundles
+  getBundles: async () => {
+    const response = await apiClient.get('/bundles')
+    return response.data
+  },
 }
 
 export default apiClient

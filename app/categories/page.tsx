@@ -14,132 +14,173 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel"
 import { getGradientFromPalette } from "@/lib/gradient-palette"
+import { getCategoryBannerSection, getCategoriesGlanceSection, getCuratedSpotlightsSection } from "@/lib/services/cms-service"
+import type { CmsSection } from "@/lib/types/cms"
+import { apiService } from "@/lib/api-client"
 
-const heroBackground = "/diverse-group-of-women-wearing-scarves-smiling.jpg"
+const defaultHeroBackground = "/diverse-group-of-women-wearing-scarves-smiling.jpg"
 const ITEMS_PER_PAGE = 6
 
-const categoryShowcase = [
-  {
-    slug: "silk",
-    name: "Silk Statements",
-    description: "Weightless drape and luminous finishes for elevated occasions.",
-    image: "/silk-scarves-category.jpg",
-    hoverImage: "/muslim-woman-wearing-a-silk-scarf--elegant--modest.jpg",
-  },
-  {
-    slug: "cotton",
-    name: "Cotton Essentials",
-    description: "Soft, breathable weaves designed for effortless all-day wear.",
-    image: "/cotton-scarves-category.jpg",
-    hoverImage: "/muslim-woman-wearing-a-pastel-scarf--serene--moder.jpg",
-  },
-  {
-    slug: "winter",
-    name: "Winter Warmth",
-    description: "Plush wool and cashmere blends crafted to cocoon you in comfort.",
-    image: "/wool-scarves-category.jpg",
-    hoverImage: "/muslim-woman-wearing-a-warm-winter-scarf--cozy--st.jpg",
-  },
-  {
-    slug: "prints",
-    name: "Artisan Prints",
-    description: "Limited-edition motifs inspired by global artistry and heritage.",
-    image: "/promotional-banner-for-scarves.jpg",
-    hoverImage: "/muslim-woman-wearing-a-stylish-scarf--vibrant--mod.jpg",
-  },
-  {
-    slug: "pastel",
-    name: "Pastel Palette",
-    description: "Dreamy hues that add a whisper of color to every ensemble.",
-    image: "/lavender-dream-scarf.jpg",
-    hoverImage: "/muslim-woman-wearing-a-pastel-scarf-full-face-visible-not-cut-off-covering-head-serene-modern.jpg",
-  },
-  {
-    slug: "earthy",
-    name: "Earthy Textures",
-    description: "Hand-loomed finishes that celebrate natural fibers and craft.",
-    image: "/scarf-making-process.jpg",
-    hoverImage: "/muslim-woman-wearing-an-elegant-scarf-full-face-visible-not-cut-off-covering-head-sophisticated.jpg",
-  },
-  {
-    slug: "blush",
-    name: "Blush Bloom",
-    description: "Petal-inspired tones that soften tailoring and romantic silhouettes.",
-    image: "/blush-pink-scarf.jpg",
-    hoverImage: "/muslim-woman-wearing-a-handcrafted-scarf--unique--.jpg",
-  },
-  {
-    slug: "lavender",
-    name: "Lavender Luxe",
-    description: "Violet gradients with subtle sheen for twilight-ready styling.",
-    image: "/lavender-dream-scarf.jpg",
-    hoverImage: "/muslim-woman-wearing-an-elegant-scarf--sophisticat.jpg",
-  },
-  {
-    slug: "mint",
-    name: "Mint Moments",
-    description: "Cooling mint tones finished with artisanal fringe details.",
-    image: "/mint-green-scarf.jpg",
-    hoverImage: "/muslim-woman-wearing-a-handcrafted-scarf-full-face-visible-not-cut-off-covering-head-unique-artisan.jpg",
-  },
-  {
-    slug: "sunset",
-    name: "Sunset Stories",
-    description: "Golden hour chroma captured on airy modal canvases.",
-    image: "/silky-rose-scarf.jpg",
-    hoverImage: "/woman-with-scarf.jpg",
-  },
-]
+type Category = {
+  id: number
+  name: string
+  slug: string
+  description: string
+  image_url: string | null
+  second_image_url: string | null
+}
 
-const editSpotlights = [
-  {
-    title: "Occasion Edit",
-    description: "Silk jacquards and hand-finished tassels for celebrations that deserve a luminous entrance.",
-    image: "/woman-wearing-elegant-scarf.jpg",
-  },
-  {
-    title: "Travel Light",
-    description: "Packable cotton scarves and wrinkle-resistant blends for curated carry-ons.",
-    image: "/mint-green-scarf.jpg",
-  },
-  {
-    title: "Studio Stories",
-    description: "Behind-the-loom snapshots spotlighting artisan techniques and limited drops.",
-    image: "/woman-with-elegant-scarf-looking-thoughtfully.jpg",
-  },
-  {
-    title: "Elevated Neutrals",
-    description: "Layer versatile neutrals with tonal textures for gallery-ready polish.",
-    image: "/woman-wearing-scarf.jpg",
-  },
-  {
-    title: "Colorblock Capsule",
-    description: "Bold contrasts and graphic stripes for standout city commutes.",
-    image: "/young-woman-smiling.png",
-  },
-  {
-    title: "Artisan Looms",
-    description: "Follow every hand-loomed detail from raw thread to finished edge.",
-    image: "/scarf-making-process.jpg",
-  },
-  {
-    title: "Weekend Escape",
-    description: "Lightweight cotton-modal blends that roll neatly into weekender bags.",
-    image: "/diverse-woman-smiling.png",
-  },
-]
+type NewProduct = {
+  id: number
+  name: string
+  slug: string
+  description: string
+  image_url: string | null
+  price: number
+}
 
 export default function CategoriesPage() {
   const [currentPage, setCurrentPage] = useState(1)
-  const totalPages = Math.max(1, Math.ceil(categoryShowcase.length / ITEMS_PER_PAGE))
+  const [bannerSection, setBannerSection] = useState<CmsSection | null>(null)
+  const [categoriesGlanceSection, setCategoriesGlanceSection] = useState<CmsSection | null>(null)
+  const [curatedSpotlightsSection, setCuratedSpotlightsSection] = useState<CmsSection | null>(null)
+  const [categories, setCategories] = useState<Category[]>([])
+  const [loadingCategories, setLoadingCategories] = useState(true)
+  const [newProducts, setNewProducts] = useState<NewProduct[]>([])
+  const [loadingNewProducts, setLoadingNewProducts] = useState(true)
+  
+  // Fetch categories from API
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setLoadingCategories(true)
+        const response = await apiService.getCategories()
+        // Laravel ResourceCollection returns { data: [...] }
+        const categoriesData = response.data || response || []
+        setCategories(categoriesData)
+      } catch (error) {
+        console.error("Error loading categories:", error)
+        setCategories([])
+      } finally {
+        setLoadingCategories(false)
+      }
+    }
+    fetchCategories()
+  }, [])
+
+  // Fetch new products from API
+  useEffect(() => {
+    const fetchNewProducts = async () => {
+      try {
+        setLoadingNewProducts(true)
+        const response = await apiService.getProducts({ new: true })
+        // Laravel ResourceCollection returns { data: [...] }
+        const productsData = response.data || response || []
+        setNewProducts(productsData)
+      } catch (error) {
+        console.error("Error loading new products:", error)
+        setNewProducts([])
+      } finally {
+        setLoadingNewProducts(false)
+      }
+    }
+    fetchNewProducts()
+  }, [])
+
+  const totalPages = Math.max(1, Math.ceil(categories.length / ITEMS_PER_PAGE))
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
-  const visibleCategories = categoryShowcase.slice(startIndex, startIndex + ITEMS_PER_PAGE)
+  const visibleCategories = categories.slice(startIndex, startIndex + ITEMS_PER_PAGE)
+
+  // Fetch banner data from CMS
+  useEffect(() => {
+    const fetchBannerData = async () => {
+      try {
+        const section = await getCategoryBannerSection('category')
+        setBannerSection(section)
+      } catch (error) {
+        console.error("Error loading category banner data:", error)
+      }
+    }
+    fetchBannerData()
+  }, [])
+
+  // Fetch categories glance section data from CMS
+  useEffect(() => {
+    const fetchCategoriesGlanceData = async () => {
+      try {
+        const section = await getCategoriesGlanceSection('category')
+        setCategoriesGlanceSection(section)
+      } catch (error) {
+        console.error("Error loading categories glance data:", error)
+      }
+    }
+    fetchCategoriesGlanceData()
+  }, [])
+
+  // Fetch curated spotlights section data from CMS
+  useEffect(() => {
+    const fetchCuratedSpotlightsData = async () => {
+      try {
+        const section = await getCuratedSpotlightsSection('category')
+        setCuratedSpotlightsSection(section)
+      } catch (error) {
+        console.error("Error loading curated spotlights data:", error)
+      }
+    }
+    fetchCuratedSpotlightsData()
+  }, [])
 
   useEffect(() => {
-    if (currentPage > totalPages) {
+    if (categories.length > 0 && currentPage > totalPages) {
       setCurrentPage(totalPages)
     }
-  }, [currentPage, totalPages])
+  }, [currentPage, totalPages, categories.length])
+
+  // Process description: strip HTML tags and decode entities
+  const processDescription = (html: string): string => {
+    return html
+      .replace(/<[^>]*>/g, "") // Remove HTML tags
+      .replace(/&nbsp;/g, " ") // Replace &nbsp; with space
+      .replace(/&amp;/g, "&") // Replace &amp; with &
+      .replace(/&lt;/g, "<") // Replace &lt; with <
+      .replace(/&gt;/g, ">") // Replace &gt; with >
+      .replace(/&quot;/g, '"') // Replace &quot; with "
+      .replace(/&#39;/g, "'") // Replace &#39; with '
+      .replace(/&mdash;/g, "—") // Replace &mdash; with em dash
+      .trim()
+  }
+
+  // Extract banner data from CMS
+  const defaultTitle = "Shop by Category"
+  const defaultHeading = "Curate Your Signature Edit"
+  const defaultDescription = "Discover silhouettes crafted for every mood—luxurious silks, breathable cottons, cold-weather layers, and limited-run artisan prints."
+  const defaultImage = defaultHeroBackground
+  const defaultButton1 = "Explore All Scarves"
+  const defaultButton2 = "Browse Categories"
+
+  const title = bannerSection?.fields?.["Title"]?.value || defaultTitle
+  const heading = bannerSection?.fields?.["Heading"]?.value || defaultHeading
+  const descriptionHtml = bannerSection?.fields?.["Description"]?.value || defaultDescription
+  const description = processDescription(descriptionHtml)
+  const imageUrl = bannerSection?.fields?.["Image"]?.url || bannerSection?.fields?.["Image"]?.value || defaultImage
+  const button1Text = bannerSection?.fields?.["Button 1"]?.value || defaultButton1
+  const button2Text = bannerSection?.fields?.["Button 2"]?.value || defaultButton2
+
+  // Extract categories glance section data from CMS
+  const defaultCategoriesGlanceTitle = "Categories at a Glance"
+  const defaultCategoriesGlanceDescription = "From heirloom-worthy silks to everyday essentials, explore the categories curated by our design studio. Each edit is photographed in-house to highlight drape, texture, and styling versatility."
+
+  const categoriesGlanceTitle = categoriesGlanceSection?.fields?.["Title"]?.value || defaultCategoriesGlanceTitle
+  const categoriesGlanceDescriptionHtml = categoriesGlanceSection?.fields?.["Description"]?.value || defaultCategoriesGlanceDescription
+  const categoriesGlanceDescription = processDescription(categoriesGlanceDescriptionHtml)
+
+  // Extract curated spotlights section data from CMS
+  const defaultCuratedSpotlightsTitle = "Curated Spotlights"
+  const defaultCuratedSpotlightsDescription = "Dive deeper into seasonal edits, styling guides, and the artisan stories shaping each collection."
+
+  const curatedSpotlightsTitle = curatedSpotlightsSection?.fields?.["Title"]?.value || defaultCuratedSpotlightsTitle
+  const curatedSpotlightsDescriptionHtml = curatedSpotlightsSection?.fields?.["Description"]?.value || defaultCuratedSpotlightsDescription
+  const curatedSpotlightsDescription = processDescription(curatedSpotlightsDescriptionHtml)
 
   const SPOTLIGHT_AUTOPLAY_DELAY = 5000
   const [spotlightApi, setSpotlightApi] = useState<CarouselApi | null>(null)
@@ -164,22 +205,21 @@ export default function CategoriesPage() {
         <section className="relative isolate overflow-hidden bg-slate-950">
           <div
             className="pointer-events-none absolute inset-0 -z-10 bg-cover bg-center bg-fixed"
-            style={{ backgroundImage: `url(${heroBackground})` }}
+            style={{ backgroundImage: `url(${imageUrl})` }}
             role="presentation"
             aria-hidden="true"
           />
           <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-r from-background/85 via-background/65 to-background/75" />
           <div className="mx-auto flex max-w-7xl flex-col items-center justify-center px-4 py-24 text-center md:px-6 md:py-32 lg:py-40">
             <ScrollReveal className="space-y-4 text-foreground" direction="up">
-              <p className="text-sm font-semibold uppercase tracking-[0.35em] text-primary/80">Shop by Category</p>
-              <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl">Curate Your Signature Edit</h1>
+              <p className="text-sm font-semibold uppercase tracking-[0.35em] text-primary/80">{title}</p>
+              <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl">{heading}</h1>
               <p className="mx-auto max-w-2xl text-base text-muted-foreground md:text-xl/relaxed">
-                Discover silhouettes crafted for every mood—luxurious silks, breathable cottons, cold-weather layers, and
-                limited-run artisan prints.
+                {description}
               </p>
               <div className="flex flex-wrap items-center justify-center gap-3">
                 <Button asChild size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
-                  <Link href="/shop">Explore All Scarves</Link>
+                  <Link href="/shop">{button1Text}</Link>
                 </Button>
                 <Button
                   asChild
@@ -187,7 +227,7 @@ export default function CategoriesPage() {
                   size="lg"
                   className="border-border/70 text-muted-foreground hover:bg-primary/10 hover:text-primary"
                 >
-                  <Link href="#categories">Browse Categories</Link>
+                  <Link href="#categories">{button2Text}</Link>
                 </Button>
               </div>
             </ScrollReveal>
@@ -197,62 +237,76 @@ export default function CategoriesPage() {
         <section id="categories" className="mx-auto max-w-7xl px-4 py-16 md:px-6 lg:px-10">
           <div className="space-y-12">
             <ScrollReveal className="space-y-3 text-center lg:text-left" direction="up">
-              <h2 className="text-3xl font-bold tracking-tighter text-primary sm:text-4xl">Categories at a Glance</h2>
+              <h2 className="text-3xl font-bold tracking-tighter text-primary sm:text-4xl">{categoriesGlanceTitle}</h2>
               <p className="mx-auto max-w-2xl text-muted-foreground md:text-lg lg:mx-0">
-                From heirloom-worthy silks to everyday essentials, explore the categories curated by our design studio.
-                Each edit is photographed in-house to highlight drape, texture, and styling versatility.
+                {categoriesGlanceDescription}
               </p>
             </ScrollReveal>
 
-            <div className="grid gap-8 sm:grid-cols-2 xl:grid-cols-3">
-              {visibleCategories.map((category, index) => {
-                const gradient = getGradientFromPalette(startIndex + index)
-                return (
-                  <ScrollReveal
-                    key={category.slug}
-                    delay={(startIndex + index) * 80}
-                    className="h-full"
-                    direction="up"
-                  >
-                    <div className="group flex h-full flex-col overflow-hidden rounded-3xl border border-border/50 bg-card/60 shadow-lg backdrop-blur transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
-                      <div className="relative aspect-[4/5] w-full overflow-hidden">
-                        <Image
-                          src={category.image}
-                          alt={`${category.name} scarves`}
-                          fill
-                          sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 30vw"
-                          className="object-cover transition-all duration-700 group-hover:scale-105 group-hover:opacity-0"
-                        />
-                        <Image
-                          src={category.hoverImage ?? category.image}
-                          alt={`${category.name} alternate view`}
-                          fill
-                          sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 30vw"
-                          className="object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-                        />
-                        <div
-                          className={`pointer-events-none absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t ${gradient} opacity-90 transition-opacity duration-500 group-hover:opacity-100`}
-                        />
-                      </div>
-                      <div className="flex flex-1 flex-col gap-4 px-6 py-6">
-                        <div className="space-y-2">
-                          <h3 className="text-xl font-semibold text-primary">{category.name}</h3>
-                          <p className="text-sm text-muted-foreground">{category.description}</p>
+            {loadingCategories ? (
+              <div className="text-center py-12 text-muted-foreground">Loading categories...</div>
+            ) : categories.length === 0 ? (
+              <div className="text-center py-12 text-muted-foreground">No categories available.</div>
+            ) : (
+              <div className="grid gap-8 sm:grid-cols-2 xl:grid-cols-3">
+                {visibleCategories.map((category, index) => {
+                  const gradient = getGradientFromPalette(startIndex + index)
+                  const description = category.description ? category.description.replace(/<[^>]*>/g, "").trim() : ""
+                  return (
+                    <ScrollReveal
+                      key={category.id}
+                      delay={(startIndex + index) * 80}
+                      className="h-full"
+                      direction="up"
+                    >
+                      <div className="group flex h-full flex-col overflow-hidden rounded-3xl border border-border/50 bg-card/60 shadow-lg backdrop-blur transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
+                        <div className="relative aspect-[4/5] w-full overflow-hidden">
+                          {category.image_url ? (
+                            <>
+                              <img
+                                src={category.image_url}
+                                alt={`${category.name} scarves`}
+                                className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105 group-hover:opacity-0"
+                              />
+                              {category.second_image_url && (
+                                <img
+                                  src={category.second_image_url}
+                                  alt={`${category.name} alternate view`}
+                                  className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+                                />
+                              )}
+                            </>
+                          ) : (
+                            <div className="w-full h-full bg-muted flex items-center justify-center">
+                              <span className="text-muted-foreground">No Image</span>
+                            </div>
+                          )}
+                          <div
+                            className={`pointer-events-none absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t ${gradient} opacity-90 transition-opacity duration-500 group-hover:opacity-100`}
+                          />
                         </div>
-                        <div className="mt-auto">
-                          <Link
-                            href={`/shop?category=${category.slug}`}
-                            className="inline-flex items-center text-sm font-semibold text-primary transition-colors hover:text-primary/80"
-                          >
-                            Explore this category &rarr;
-                          </Link>
+                        <div className="flex flex-1 flex-col gap-4 px-6 py-6">
+                          <div className="space-y-2">
+                            <h3 className="text-xl font-semibold text-primary">{category.name}</h3>
+                            {description && (
+                              <p className="text-sm text-muted-foreground">{description}</p>
+                            )}
+                          </div>
+                          <div className="mt-auto">
+                            <Link
+                              href={`/shop?category=${category.slug}`}
+                              className="inline-flex items-center text-sm font-semibold text-primary transition-colors hover:text-primary/80"
+                            >
+                              Explore this category &rarr;
+                            </Link>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </ScrollReveal>
-                )
-              })}
-            </div>
+                    </ScrollReveal>
+                  )
+                })}
+              </div>
+            )}
             <div className="flex flex-wrap items-center justify-center gap-2 pt-6">
               <Button
                 variant="outline"
@@ -299,9 +353,9 @@ export default function CategoriesPage() {
         <section className="bg-muted/30">
           <div className="mx-auto max-w-7xl px-4 py-16 md:px-6 lg:px-10">
             <ScrollReveal className="space-y-3 text-center lg:text-left" direction="up">
-              <h2 className="text-3xl font-bold tracking-tighter text-primary sm:text-4xl">Curated Spotlights</h2>
+              <h2 className="text-3xl font-bold tracking-tighter text-primary sm:text-4xl">{curatedSpotlightsTitle}</h2>
               <p className="mx-auto max-w-2xl text-muted-foreground md:text-lg lg:mx-0">
-                Dive deeper into seasonal edits, styling guides, and the artisan stories shaping each collection.
+                {curatedSpotlightsDescription}
               </p>
             </ScrollReveal>
             <Carousel
@@ -316,38 +370,60 @@ export default function CategoriesPage() {
               onTouchEnd={resumeSpotlight}
             >
               <CarouselContent className="-ml-4 md:-ml-6">
-                {editSpotlights.map((edit, index) => (
-                  <CarouselItem
-                    key={edit.title}
-                    className="pl-4 md:basis-1/2 md:pl-6 xl:basis-1/3"
-                  >
-                    <ScrollReveal delay={index * 120} direction="up" className="h-full">
-                      <div className="flex h-full flex-col overflow-hidden rounded-3xl border border-border/40 bg-background/80 shadow-lg transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl">
-                        <div className="relative h-56 w-full overflow-hidden">
-                          <Image
-                            src={edit.image}
-                            alt={edit.title}
-                            fill
-                            sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 25vw"
-                            className="object-cover transition-transform duration-700 hover:scale-105"
-                          />
-                        </div>
-                        <div className="flex flex-1 flex-col gap-3 px-6 py-6">
-                          <h3 className="text-lg font-semibold text-primary">{edit.title}</h3>
-                          <p className="text-sm text-muted-foreground">{edit.description}</p>
-                          <Link
-                            href="/stories"
-                            className="mt-auto inline-flex items-center text-sm font-semibold text-primary transition-colors hover:text-primary/80"
-                            onFocusCapture={pauseSpotlight}
-                            onBlurCapture={resumeSpotlight}
-                          >
-                            Read the story &rarr;
-                          </Link>
-                        </div>
-                      </div>
-                    </ScrollReveal>
+                {loadingNewProducts ? (
+                  <CarouselItem className="pl-4 md:pl-6">
+                    <div className="text-center py-12 text-muted-foreground">Loading products...</div>
                   </CarouselItem>
-                ))}
+                ) : newProducts.length === 0 ? (
+                  <CarouselItem className="pl-4 md:pl-6">
+                    <div className="text-center py-12 text-muted-foreground">No new products available.</div>
+                  </CarouselItem>
+                ) : (
+                  newProducts.map((product, index) => {
+                    const description = product.description ? product.description.replace(/<[^>]*>/g, "").substring(0, 100) + "..." : ""
+                    return (
+                      <CarouselItem
+                        key={product.id}
+                        className="pl-4 md:basis-1/2 md:pl-6 xl:basis-1/3"
+                      >
+                        <ScrollReveal delay={index * 120} direction="up" className="h-full">
+                          <div className="flex h-full flex-col overflow-hidden rounded-3xl border border-border/40 bg-background/80 shadow-lg transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl">
+                            <div className="relative h-56 w-full overflow-hidden">
+                              {product.image_url ? (
+                                <img
+                                  src={product.image_url}
+                                  alt={product.name}
+                                  className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+                                />
+                              ) : (
+                                <div className="w-full h-full bg-muted flex items-center justify-center">
+                                  <span className="text-muted-foreground">No Image</span>
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex flex-1 flex-col gap-3 px-6 py-6">
+                              <h3 className="text-lg font-semibold text-primary">{product.name}</h3>
+                              {description && (
+                                <p className="text-sm text-muted-foreground">{description}</p>
+                              )}
+                              <div className="mt-auto flex items-center justify-between">
+                                <p className="text-base font-semibold text-primary">PKR {product.price.toFixed(2)}</p>
+                                <Link
+                                  href={`/shop/${product.slug}`}
+                                  className="inline-flex items-center text-sm font-semibold text-primary transition-colors hover:text-primary/80"
+                                  onFocusCapture={pauseSpotlight}
+                                  onBlurCapture={resumeSpotlight}
+                                >
+                                  View product &rarr;
+                                </Link>
+                              </div>
+                            </div>
+                          </div>
+                        </ScrollReveal>
+                      </CarouselItem>
+                    )
+                  })
+                )}
               </CarouselContent>
               <CarouselPrevious className="hidden -left-16 sm:flex h-12 w-12" />
               <CarouselNext className="hidden -right-16 sm:flex h-12 w-12" />

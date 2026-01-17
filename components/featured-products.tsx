@@ -6,132 +6,45 @@ import Link from "next/link"
 import { ScrollReveal } from "./scroll-reveal"
 import { getGradientFromPalette } from "@/lib/gradient-palette"
 import type { CmsSection } from "@/lib/types/cms"
+import { apiService } from "@/lib/api-client"
 
 interface FeaturedProductsProps {
   sectionData?: CmsSection | null
 }
 
+interface Product {
+  id: number
+  name: string
+  slug: string
+  description: string
+  price: number
+  image_url: string | null
+  second_image_url: string | null
+}
+
 export function FeaturedProducts({ sectionData }: FeaturedProductsProps) {
-  const slides = [
-    {
-      id: "abayas",
-      href: "/categories/abayas",
-      image: "/woman-wearing-scarf-banner.jpg",
-      hoverImage: "/woman-with-scarf.jpg",
-      label: "SHOP ABAYAS",
-      pos: "center 20%",
-    },
-    {
-      id: "hijabs",
-      href: "/categories/hijabs",
-      image: "/diverse-group-of-women-wearing-scarves-smiling.jpg",
-      hoverImage: "/diverse-woman-smiling.png",
-      label: "SHOP HIJABS",
-      pos: "center 40%",
-    },
-    {
-      id: "dresses",
-      href: "/categories/dresses",
-      image: "/woman-wearing-scarf.jpg",
-      hoverImage: "/woman-with-scarf.jpg",
-      label: "SHOP DRESSES",
-      pos: "center 35%",
-    },
-    {
-      id: "elegant",
-      href: "/categories/elegant",
-      image: "/woman-with-elegant-scarf-looking-thoughtfully.jpg",
-      label: "SHOP ELEGANT",
-      pos: "center 30%",
-    },
-    {
-      id: "silk",
-      href: "/categories/silk",
-      image: "/muslim-woman-wearing-a-silk-scarf-full-face-visible-not-cut-off-covering-head-elegant-modest.jpg",
-      hoverImage: "/muslim-woman-wearing-a-silk-scarf--elegant--modest.jpg",
-      label: "SHOP SILK",
-      pos: "center 20%",
-    },
-    {
-      id: "handcrafted",
-      href: "/categories/handcrafted",
-      image: "/muslim-woman-wearing-a-handcrafted-scarf-full-face-visible-not-cut-off-covering-head-unique-artisan.jpg",
-      hoverImage: "/muslim-woman-wearing-a-handcrafted-scarf--unique--.jpg",
-      label: "SHOP HANDCRAFTED",
-      pos: "center 30%",
-    },
-  ]
+  const [products, setProducts] = useState<Product[]>([])
+  const [loading, setLoading] = useState(true)
 
-  const [lightboxOpen, setLightboxOpen] = useState(false)
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [imageVisible, setImageVisible] = useState(true)
-  const [isAnimating, setIsAnimating] = useState(false)
-  const animTimeout = React.useRef<number | null>(null)
-  const animEndTimeout = React.useRef<number | null>(null)
-
+  // Fetch featured products
   useEffect(() => {
-    function onKey(e: KeyboardEvent) {
-      if (!lightboxOpen) return
-      if (isAnimating) return
-      if (e.key === "Escape") setLightboxOpen(false)
-      if (e.key === "ArrowRight") setCurrentIndex((i) => (i + 1) % slides.length)
-      if (e.key === "ArrowLeft") setCurrentIndex((i) => (i - 1 + slides.length) % slides.length)
+    async function fetchFeaturedProducts() {
+      try {
+        setLoading(true)
+        const response = await apiService.getFeaturedProducts(6)
+        // Laravel ResourceCollection returns { data: [...] }
+        const productsData = response?.data || (Array.isArray(response) ? response : [])
+        setProducts(productsData)
+      } catch (error) {
+        console.error("Error fetching featured products:", error)
+        setProducts([])
+      } finally {
+        setLoading(false)
+      }
     }
-    window.addEventListener("keydown", onKey)
-    return () => window.removeEventListener("keydown", onKey)
-  }, [lightboxOpen, slides.length, isAnimating])
 
-  useEffect(() => {
-    return () => {
-      if (animTimeout.current) window.clearTimeout(animTimeout.current)
-      if (animEndTimeout.current) window.clearTimeout(animEndTimeout.current)
-    }
+    fetchFeaturedProducts()
   }, [])
-
-  function openLightbox(idx: number) {
-    setCurrentIndex(idx)
-    setLightboxOpen(true)
-  }
-
-  function closeLightbox() {
-    setLightboxOpen(false)
-    setIsAnimating(false)
-    setImageVisible(true)
-    if (animTimeout.current) {
-      window.clearTimeout(animTimeout.current)
-      animTimeout.current = null
-    }
-    if (animEndTimeout.current) {
-      window.clearTimeout(animEndTimeout.current)
-      animEndTimeout.current = null
-    }
-  }
-
-  const TRANS_MS = 300
-
-  function animateToIndex(newIndex: number) {
-    if (isAnimating) return
-    setIsAnimating(true)
-    // start fade out
-    setImageVisible(false)
-    // after fade-out, change image and fade in
-    animTimeout.current = window.setTimeout(() => {
-      setCurrentIndex(newIndex)
-      setImageVisible(true)
-      // after fade-in completes, end animating
-      animEndTimeout.current = window.setTimeout(() => {
-        setIsAnimating(false)
-      }, TRANS_MS)
-    }, TRANS_MS)
-  }
-
-  function next() {
-    animateToIndex((currentIndex + 1) % slides.length)
-  }
-
-  function prev() {
-    animateToIndex((currentIndex - 1 + slides.length) % slides.length)
-  }
 
   // Extract title and description from CMS data
   const defaultTitle = "Featured Products"
@@ -172,123 +85,74 @@ export function FeaturedProducts({ sectionData }: FeaturedProductsProps) {
       </ScrollReveal>
 
       {/* Full-bleed grid (no container) - 3 columns per row so we get 2 rows of 3 images */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-0 max-w-full">
-        {slides.map((s, idx) => {
-          const gradient = getGradientFromPalette(idx)
-          return (
-          <ScrollReveal key={s.id} className="block" delay={idx * 80}>
-            <div
-              role="button"
-              tabIndex={0}
-              onClick={() => openLightbox(idx)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") openLightbox(idx)
-              }}
-              className="relative w-full h-[640px] md:h-[760px] lg:h-[880px] overflow-hidden group cursor-pointer"
-            >
-              {/* Primary image (default) */}
-              <Image
-                src={s.image}
-                alt={s.label}
-                fill
-                style={{ objectFit: "cover", objectPosition: s.pos }}
-                className="transition-opacity duration-500 ease-in-out opacity-100 group-hover:opacity-0"
-              />
-              {/* Alternate image (on hover) */}
-              <Image
-                src={s.hoverImage || s.image}
-                alt={s.label}
-                fill
-                style={{ objectFit: "cover", objectPosition: s.pos }}
-                className="transition-opacity duration-500 ease-in-out opacity-0 group-hover:opacity-100"
-              />
-              <div
-                className={`pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t ${gradient} opacity-90 transition-opacity duration-500 group-hover:opacity-100`}
-              />
-              <div className="absolute bottom-6 left-6 text-white">
-                <Link
-                  href={s.href}
-                  onClick={(e) => e.stopPropagation()}
-                  className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight drop-shadow-lg"
-                >
-                  {s.label}
-                </Link>
-              </div>
-            </div>
-          </ScrollReveal>
-        )})}
-      </div>
-
-      {/* Lightbox modal */}
-      {lightboxOpen && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/70 pt-0 md:pt-2 pb-20 md:pb-24" onClick={closeLightbox}>
-          <div
-            className="relative max-w-[95vw] max-h-[95vh] w-full mx-4 transform -translate-y-8 md:-translate-y-12"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              aria-label="Close"
-              onClick={closeLightbox}
-              className="absolute top-12 md:top-16 right-3 z-50 bg-white/90 rounded-full w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-lg md:text-2xl shadow-sm hover:bg-white"
-            >
-              ×
-            </button>
-
-            <button
-              aria-label="Previous"
-              onClick={(e) => {
-                e.stopPropagation()
-                if (!isAnimating) prev()
-              }}
-              className={
-                "absolute left-3 top-1/2 -translate-y-1/2 z-50 bg-white/80 rounded-full p-2 " +
-                (isAnimating ? "pointer-events-none opacity-50" : "")
-              }
-            >
-              ‹
-            </button>
-
-            <button
-              aria-label="Next"
-              onClick={(e) => {
-                e.stopPropagation()
-                if (!isAnimating) next()
-              }}
-              className={
-                "absolute right-3 top-1/2 -translate-y-1/2 z-50 bg-white/80 rounded-full p-2 " +
-                (isAnimating ? "pointer-events-none opacity-50" : "")
-              }
-            >
-              ›
-            </button>
-
-            <div className="w-full h-full flex items-center justify-center">
-              <div
-                className="relative w-full transition-opacity duration-300"
-                style={{ aspectRatio: "4/3", opacity: imageVisible ? 1 : 0 }}
-              >
-                <Image
-                  src={slides[currentIndex].image}
-                  alt={slides[currentIndex].label}
-                  fill
-                  style={{ objectFit: "contain" }}
-                />
-              </div>
-
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-center text-white">
-                <Link
-                  href={slides[currentIndex].href}
-                  className="inline-block bg-white/10 hover:bg-white/20 px-4 py-2 rounded text-sm"
-                  onClick={(e) => {
-                    // let link navigate; close lightbox after a short delay
-                    // don't stopPropagation here
-                  }}
-                >
-                  {slides[currentIndex].label}
-                </Link>
-              </div>
-            </div>
+      {loading ? (
+        <div className="w-full px-4 py-8 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading products...</p>
           </div>
+        </div>
+      ) : products.length === 0 ? (
+        <div className="w-full px-4 py-8 flex items-center justify-center">
+          <p className="text-muted-foreground">No featured products available.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-0 max-w-full">
+          {products.map((product, idx) => {
+            const gradient = getGradientFromPalette(idx)
+            return (
+              <ScrollReveal key={product.id} className="block" delay={idx * 80}>
+                <Link
+                  href={`/shop/${product.slug}`}
+                  className="relative w-full h-[640px] md:h-[760px] lg:h-[880px] overflow-hidden group cursor-pointer block"
+                >
+                  {/* Featured Image (default) */}
+                  {product.image_url ? (
+                    <img
+                      src={product.image_url}
+                      alt={product.name}
+                      className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ease-in-out opacity-100 group-hover:opacity-0"
+                      onError={(e) => {
+                        // Fallback if image fails to load
+                        const target = e.target as HTMLImageElement
+                        target.style.display = 'none'
+                      }}
+                    />
+                  ) : (
+                    <div className="absolute inset-0 w-full h-full bg-muted flex items-center justify-center">
+                      <span className="text-muted-foreground text-sm">No Image</span>
+                    </div>
+                  )}
+                  
+                  {/* Second Image (on hover) */}
+                  {product.second_image_url && (
+                    <img
+                      src={product.second_image_url}
+                      alt={`${product.name} alternate view`}
+                      className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ease-in-out opacity-0 group-hover:opacity-100"
+                      onError={(e) => {
+                        // Hide if second image fails to load
+                        const target = e.target as HTMLImageElement
+                        target.style.display = 'none'
+                      }}
+                    />
+                  )}
+                  
+                  {/* Gradient Overlay */}
+                  <div
+                    className={`pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t ${gradient} opacity-90 transition-opacity duration-500 group-hover:opacity-100`}
+                  />
+                  
+                  {/* Product Name */}
+                  <div className="absolute bottom-6 left-6 text-white z-10">
+                    <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight drop-shadow-lg">
+                      {product.name}
+                    </h3>
+                  </div>
+                </Link>
+              </ScrollReveal>
+            )
+          })}
         </div>
       )}
     </section>
